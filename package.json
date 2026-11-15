@@ -9,7 +9,7 @@
     "test:watch": "vitest",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "build": "tsc",
+    "build": "tsc && vite build",
     "prepare": "husky"
   },
   "keywords": [],
