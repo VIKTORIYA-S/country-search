@@ -24,13 +24,39 @@ message.className = 'message';
 
 const results = document.createElement('div');
 results.className = 'results';
+const details = document.createElement('section');
+details.className = 'country-details';
 
-container.append(title, subtitle, searchInput, message, results);
+container.append(title, subtitle, searchInput, message, results, details);
 
 document.body.append(container);
 const search = createLatestSearch(searchCountries);
 
 let currentQuery = '';
+function showCountryDetails(country: ReturnType<typeof mapCountryResponse>) {
+  details.replaceChildren();
+
+  const title = document.createElement('h2');
+  title.textContent = `${country.flag} ${country.name}`;
+
+  const description = document.createElement('p');
+  description.textContent = `${country.name} is located in ${country.subregion}, ${country.region}.`;
+
+  const area = document.createElement('p');
+  area.textContent = `Area: ${country.area.toLocaleString()} km²`;
+
+  const borders = document.createElement('p');
+  borders.textContent = `Borders: ${country.borders.join(', ') || 'None'}`;
+
+  const currencies = document.createElement('p');
+  currencies.textContent = `Currencies: ${country.currencies
+    .map(
+      (currency) => `${currency.name} (${currency.code}, ${currency.symbol})`,
+    )
+    .join(', ')}`;
+
+  details.append(title, description, area, borders, currencies);
+}
 
 const performSearch = debounce(async (query: string) => {
   if (!query || query !== currentQuery) {
@@ -79,6 +105,11 @@ const performSearch = debounce(async (query: string) => {
       languages.textContent = `Languages: ${country.languages.join(', ')}`;
 
       card.append(name, capital, region, population, languages);
+
+      card.addEventListener('click', () => {
+        showCountryDetails(country);
+      });
+
       results.append(card);
     });
   } catch (error) {

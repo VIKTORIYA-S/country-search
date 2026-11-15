@@ -89,3 +89,20 @@ button:hover {
         font-size: 28px;
     }
 }
+
+.country-details {
+    margin-top: 32px;
+    padding: 24px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
+}
+
+.country-details h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.country-details p {
+    line-height: 1.6;
+}
