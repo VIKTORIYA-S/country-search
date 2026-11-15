@@ -149,7 +149,8 @@ searchInput.addEventListener('input', () => {
 
     search.cancel();
     retryButton.hidden = true;
-  results.replaceChildren();
+    results.replaceChildren();
+    details.replaceChildren();
 
   if (!currentQuery) {
     message.textContent = '';
