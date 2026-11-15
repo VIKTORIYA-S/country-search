@@ -26,13 +26,24 @@ const results = document.createElement('div');
 results.className = 'results';
 const details = document.createElement('section');
 details.className = 'country-details';
+const retryButton = document.createElement('button');
+retryButton.textContent = 'Retry';
+retryButton.hidden = true;
 
-container.append(title, subtitle, searchInput, message, results, details);
-
+container.append(
+  title,
+  subtitle,
+  searchInput,
+  message,
+  retryButton,
+  results,
+  details,
+);
 document.body.append(container);
 const search = createLatestSearch(searchCountries);
 
 let currentQuery = '';
+let lastQuery = '';
 function showCountryDetails(country: ReturnType<typeof mapCountryResponse>) {
   details.replaceChildren();
 
@@ -117,15 +128,27 @@ const performSearch = debounce(async (query: string) => {
       return;
     }
 
-    message.textContent = 'Something went wrong. Please try again.';
+      message.textContent = 'Something went wrong. Please try again.';
+      retryButton.hidden = false;
     console.error(error);
   }
 }, 300);
 
-searchInput.addEventListener('input', () => {
-  currentQuery = searchInput.value.trim();
+retryButton.addEventListener('click', () => {
+  if (!lastQuery) {
+    return;
+  }
 
-  search.cancel();
+  retryButton.hidden = true;
+  performSearch(lastQuery);
+});
+
+searchInput.addEventListener('input', () => {
+    currentQuery = searchInput.value.trim();
+    lastQuery = currentQuery;
+
+    search.cancel();
+    retryButton.hidden = true;
   results.replaceChildren();
 
   if (!currentQuery) {
