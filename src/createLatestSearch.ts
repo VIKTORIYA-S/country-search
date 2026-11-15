@@ -1,13 +1,14 @@
+type LatestSearch = ((query: string) => Promise<unknown[] | null>) & {
+  cancel: () => void;
+};
+
 export function createLatestSearch(
   searchFunction: (query: string, signal: AbortSignal) => Promise<unknown[]>,
-) {
+): LatestSearch {
   let controller: AbortController | null = null;
 
-  return async (query: string): Promise<unknown[] | null> => {
-    // Отменяем предыдущий запрос.
+  const search = async (query: string): Promise<unknown[] | null> => {
     controller?.abort();
-
-    // Создаём новый контроллер.
     controller = new AbortController();
 
     const currentController = controller;
@@ -15,14 +16,12 @@ export function createLatestSearch(
     try {
       const result = await searchFunction(query, currentController.signal);
 
-      // Проверяем, что запрос всё ещё актуален.
       if (currentController !== controller) {
         return null;
       }
 
       return result;
     } catch (error) {
-      // Отмена запроса не считается ошибкой.
       if ((error as Error).name === 'AbortError') {
         return null;
       }
@@ -30,4 +29,11 @@ export function createLatestSearch(
       throw error;
     }
   };
+
+  search.cancel = () => {
+    controller?.abort();
+    controller = null;
+  };
+
+  return search;
 }
